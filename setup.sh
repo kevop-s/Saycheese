@@ -7,21 +7,21 @@
 
 PHP_CONTAINER="php-saycheese"
 NGX_CONTAINER="nginx-saycheese"
-NGX_DOMAIN="saycheese.kevops.xyz"
+NGX_DOMAIN="saycheese.com"
 
 mkdir -p /var/containers/$NGX_CONTAINER/etc/nginx/conf.d
 mkdir -p /var/containers/share/var/www/html/{data,images}
 
 git clone https://github.com/kevop-s/Saycheese.git /opt/Saycheese
-
 cp -rf /opt/Saycheese/src/* /var/containers/share/var/www/html/
 chmod 777 -R /var/containers/share/var/www/html/
+rm -rf /opt/Saycheese
 
 cat<<-EOF > /var/containers/$NGX_CONTAINER/etc/nginx/conf.d/$NGX_DOMAIN.conf
 server {
     listen 80;
     index index.php;
-    server_name saycheese.kevops.xyz;
+    server_name $NGX_DOMAIN;
     root /var/www/html;
 
     location / {
@@ -38,6 +38,8 @@ server {
     }
 }
 EOF
+sed "s%url: 'template_saycheese',%url: https://${NGX_DOMAIN}/post.php,%g" /var/containers/share/var/www/html/zoom_cheese.html > /var/containers/share/var/www/html/index.html
+sed -i "s%header.*%header('Location: https://${NGX_DOMAIN}/index.html');%g" /var/containers/share/var/www/html/index.php
 
 docker run -d --name $PHP_CONTAINER \
     -v /var/containers/share/var/www/html:/var/www/html:z \
@@ -45,7 +47,6 @@ docker run -d --name $PHP_CONTAINER \
     php:7-fpm
 
 docker run -td --name $NGX_CONTAINER \
-    -p 80:80 -p 443:443 \
     -v /var/containers/share/var/www/html:/var/www/html:z \
     -v /var/containers/$NGX_CONTAINER/var/log/nginx:/var/log/nginx:z \
     -v /var/containers/$NGX_CONTAINER/etc/nginx/conf.d:/etc/nginx/conf.d:z \
