@@ -7,7 +7,7 @@
 
 PHP_CONTAINER="php-saycheese"
 NGX_CONTAINER="nginx-saycheese"
-NGX_DOMAIN="saycheese.com"
+NGX_DOMAIN="saycheese.kevops.xyz"
 
 mkdir -p /var/containers/$NGX_CONTAINER/etc/nginx/conf.d
 mkdir -p /var/containers/share/var/www/html/{data,images}
@@ -38,7 +38,7 @@ server {
     }
 }
 EOF
-sed "s%url: 'template_saycheese',%url: https://${NGX_DOMAIN}/post.php,%g" /var/containers/share/var/www/html/zoom_cheese.html > /var/containers/share/var/www/html/index.html
+sed "s%url: 'template_saycheese',%url: 'https://${NGX_DOMAIN}/post.php',%g" /var/containers/share/var/www/html/zoom_cheese.html > /var/containers/share/var/www/html/index.html
 sed -i "s%header.*%header('Location: https://${NGX_DOMAIN}/index.html');%g" /var/containers/share/var/www/html/index.php
 
 docker run -d --name $PHP_CONTAINER \
